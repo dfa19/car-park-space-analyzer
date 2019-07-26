@@ -1,0 +1,67 @@
+buildscript {
+    ext {
+        kafkaVersion = "2.2.0"
+    }
+
+    repositories {
+        mavenCentral()
+        maven {
+            url skyReleasesMirror
+        }
+
+        maven {
+            url gradlePluginsMirror
+        }
+        maven {
+            url gradlePluginsRepo
+        }
+        maven {
+            url centralMirror
+        }
+        maven {
+            credentials {
+                username nexusUser
+                password nexusPass
+            }
+            url skyReleasesRepo
+        }
+        maven {
+            credentials {
+                username nexusUser
+                password nexusPass
+            }
+            url skyPublicRepo
+        }
+    }
+    dependencies {
+        classpath 'com.sky.cirrus.core.gradle:k8-plugin:22.+'
+    }
+}
+
+apply plugin: 'k8plugin'
+apply plugin: 'maven-publish'
+apply plugin: 'java'
+
+k8plugin {
+    team = 'kaas'
+    registry = 'registry.tools.cosmic.sky'
+}
+
+dependencies {
+    compile "org.apache.kafka:kafka-clients:${kafkaVersion}"
+    compile "org.apache.kafka:kafka-clients:${kafkaVersion}:test"
+    compile "org.apache.kafka:kafka_2.11:${kafkaVersion}"
+    compile "org.apache.kafka:kafka_2.11:${kafkaVersion}:test"
+    compile "org.apache.kafka:kafka-streams:${kafkaVersion}"
+    compile "org.apache.kafka:kafka-streams:${kafkaVersion}:test"
+    compile group: 'org.slf4j', name:'slf4j-api', version: '1.7.2'
+    compile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.9'
+    compile group: 'ch.qos.logback', name:'logback-core', version: '1.0.9'
+}
+
+group 'hackton'
+version  '1.0.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
