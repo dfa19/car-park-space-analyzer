@@ -26,9 +26,11 @@ public class StreamAppConfig {
     public Properties inputStreamProperties() {
 
         Properties inputStreamsConfiguration = new Properties();
-        inputStreamsConfiguration.putAll(streamConfig);
+        //inputStreamsConfiguration.putAll(streamConfig);
         String stringSerdeName = Serdes.String().getClass().getName();
         inputStreamsConfiguration.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, stringSerdeName);
+        inputStreamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        inputStreamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, "sky.hackton.kstream.car.park.space.analyzer");
         inputStreamsConfiguration.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, stringSerdeName);
         inputStreamsConfiguration.put(StreamsConfig.producerPrefix(ProducerConfig.MAX_REQUEST_SIZE_CONFIG), 10_000_000);
         //Exactly Once Semantics
