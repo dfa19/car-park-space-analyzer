@@ -69,6 +69,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
     compile "com.google.code.gson:gson:${gsonVersion}"
+    compile "org.apache.kafka:kafka-streams-test-utils:${kafkaVersion}"
 }
 
 group 'hackton'

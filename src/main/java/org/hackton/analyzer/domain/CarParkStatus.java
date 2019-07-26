@@ -2,9 +2,7 @@ package org.hackton.analyzer.domain;
 
 public class CarParkStatus {
     /**
-      0 = General
-      1 = Shift
-      2 = Reserved
+      Enumerated Type: General, Shift, Reserved
      */
     private String carParkTypeId;
     /**

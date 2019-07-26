@@ -23,10 +23,6 @@ import static org.hackton.analyzer.serde.StreamSerdes.barrierEventSerde;
 @Component
 public class StreamDataFlowPipe {
 
-    private static final int TOMBSTONE = 0;
-
-    private static final int CANONICAL_FORMAT = 1;
-
     private KafkaStreams streams;
 
     @Value("${car.park.barrier.event.topic}")
@@ -92,7 +88,7 @@ public class StreamDataFlowPipe {
 
     @PreDestroy
     public void closeStream() {
-        log.info("Closing RMS Adapter Stream..");
+        log.info("Closing Car Park Analyzer..");
         streams.close();
         streams.cleanUp();
     }
