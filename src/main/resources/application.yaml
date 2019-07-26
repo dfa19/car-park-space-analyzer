@@ -1,0 +1,32 @@
+car.park:
+  barrier.event.topic: car-park-barrier-events
+  availability.output.topic: car-park-barrier-events
+  store: hackton.car.park.space.store
+  zone:
+    zone-1:
+      capacity: 10
+      type: Shift
+    zone-2:
+      capacity: 30
+      type: Reserved
+kafka:
+  stream:
+    config:
+      streamConfig:
+        bootstrap.servers: localhost:9092
+        application.id: sky.hackton.kstream.car.park.space.analyzer
+        auto.offset.reset: earliest
+        key.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+        value.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+        dead.letter.queue: sky.csc.local.rights.availability-window.processed.dead-letter
+        invalid.message.topic: sky.csc.local.rights.availability-window.raw.invalid
+        default.production.exception.handler: com.sky.csp.rightslogicadapter.exception.RmsAdapterExceptionHandler
+        default.deserialization.exception.handler: com.sky.csp.rightslogicadapter.exception.RmsDeserializationExceptionHandler
+        producer.compression.type: gzip
+        ssl:
+          keystore.location: /certs/client.jks
+          keystore.password: fastdata
+          truststore.location: /certs/truststore.jks
+          truststore.password: fastdata
+        security:
+          protocol: SSL
