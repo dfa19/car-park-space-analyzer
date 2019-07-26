@@ -1,46 +1,29 @@
 buildscript {
     ext {
         kafkaVersion = "2.2.0"
+        springBootVersion = '2.1.3.RELEASE'
+        lombokVersion = '1.18.2'
+
     }
 
     repositories {
         mavenCentral()
-        maven {
-            url skyReleasesMirror
-        }
-
-        maven {
-            url gradlePluginsMirror
-        }
-        maven {
-            url gradlePluginsRepo
-        }
-        maven {
-            url centralMirror
-        }
-        maven {
-            credentials {
-                username nexusUser
-                password nexusPass
-            }
-            url skyReleasesRepo
-        }
-        maven {
-            credentials {
-                username nexusUser
-                password nexusPass
-            }
-            url skyPublicRepo
-        }
     }
     dependencies {
         classpath 'com.sky.cirrus.core.gradle:k8-plugin:22.+'
     }
 }
 
+
+plugins {
+    id 'org.springframework.boot' version '2.1.3.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.4.RELEASE'
+}
+
 apply plugin: 'k8plugin'
 apply plugin: 'maven-publish'
 apply plugin: 'java'
+
 
 k8plugin {
     team = 'kaas'
@@ -48,21 +31,48 @@ k8plugin {
 }
 
 dependencies {
-    compile "org.apache.kafka:kafka-clients:${kafkaVersion}"
-    compile "org.apache.kafka:kafka-clients:${kafkaVersion}:test"
+   
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
+    compile "commons-io:commons-io:2.6"
+    compile "org.projectlombok:lombok:${lombokVersion}"
+    compile "com.couchbase.client:java-client:2.5.9"
     compile "org.apache.kafka:kafka_2.11:${kafkaVersion}"
-    compile "org.apache.kafka:kafka_2.11:${kafkaVersion}:test"
     compile "org.apache.kafka:kafka-streams:${kafkaVersion}"
-    compile "org.apache.kafka:kafka-streams:${kafkaVersion}:test"
-    compile group: 'org.slf4j', name:'slf4j-api', version: '1.7.2'
-    compile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.9'
-    compile group: 'ch.qos.logback', name:'logback-core', version: '1.0.9'
-    compile "org.projectlombok:lombok:1.16.20"
+    compile "org.apache.kafka:kafka-clients:${kafkaVersion}"
+    compile group: 'com.github.danielwegener', name: 'logback-kafka-appender', version: '0.2.0-RC1'
+    compile "io.springfox:springfox-swagger2:2.9.2"
+    compile "io.springfox:springfox-swagger-ui:2.9.2"
+    compile "com.jayway.jsonpath:json-path:2.3.0"
+    compile "com.github.fge:json-schema-validator:2.2.6"
+    compile "org.apache.commons:commons-lang3:3.7"
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.7'
+    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4")
+
+    //testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+    testCompile "org.objenesis:objenesis:2.5.1"
+    testCompile "cglib:cglib-nodep:3.2.4"
+    // https://mvnrepository.com/artifact/org.springframework/spring-test
+    testCompile group: 'org.springframework', name: 'spring-test', version: '5.1.5.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+
+    testCompile "com.jayway.jsonpath:json-path:2.4.0"
+    testCompile "com.jayway.jsonpath:json-path-assert:2.4.0"
+    testCompile "org.apache.commons:commons-exec:1.3"
+    testCompile "com.salesforce.kafka.test:kafka-junit4:3.0.1"
+    testCompile "com.couchbase.mock:CouchbaseMock:1.5.19"
+    implementation "com.google.code.gson:gson:2.8.5"
+    testCompile "org.testcontainers:testcontainers:1.10.1"
+    testCompile "org.apache.commons:commons-exec:1.3"
+    testCompile "org.apache.kafka:kafka-streams-test-utils:${kafkaVersion}"
+    testCompile "org.awaitility:awaitility:3.1.2"
+    //testCompile "com.palantir.docker.compose:docker-compose-rule-junit4:0.34.0"
+
 }
 
 group 'hackton'
 version  '1.0.0'
-
-apply plugin: 'java'
 
 sourceCompatibility = 1.8

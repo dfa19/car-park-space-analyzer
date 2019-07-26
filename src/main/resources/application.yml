@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: carParkSpaceApplication
+api:
+  version: 1.0
+
+kafka-topology:
+  bootstrap-servers: kafka:9092,localhost:9092
+  security-protocol: PLAINTEXT
+  truststore-location: ""
+  truststore-password: ""
+  keystore-location: ""
+  keystore-password: ""
+  key-password: ""
+  application-id: carParkSpaceApplication
+  threads: 1
+  validation: true
+  schema-path: schema/title-schema.json
+  topics:
+    item: items
+    offer: offers
+    term: terms
+    title: titles
+    error: errors
+
+server:
+  port: 8080
+  maxHttpHeaderSize: 131072
