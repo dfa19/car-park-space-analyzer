@@ -1,0 +1,19 @@
+car.park:
+  barrier.event.topic: car-park-barrier-events.test
+  availability.output.topic: car-park-barrier-events.test
+  store: hackton.car.park.space.store.test
+  zone:
+    zone-1:
+      capacity: 10
+      type: Shift
+    zone-2:
+      capacity: 30
+      type: Reserved
+kafka:
+  stream:
+    config:
+      streamConfig:
+        bootstrap.servers: localhost:9092
+        application.id: sky.hackton.kstream.car.park.space.analyzer.test
+        auto.offset.reset: earliest
+        producer.compression.type: gzip
