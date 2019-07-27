@@ -7,17 +7,21 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Produced;
+import org.hackton.analyzer.config.ZoneCapacity;
 import org.hackton.analyzer.domain.BarrierEvent;
 import org.hackton.analyzer.factory.StreamFactory;
+import org.hackton.analyzer.transformer.BarrierEventTransformer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hackton.analyzer.serde.StreamSerdes.barrierEventSerde;
+
 
 @Slf4j
 @Component
@@ -29,10 +33,13 @@ public class StreamDataFlowPipe {
     private String rawSourceTopic;
 
     @Value("${car.park.store}")
-    private String carkParkZoneStore;
+    private String carkParkZoneStoreName;
 
     @Value("{car.park.availability.output.topic}")
     private String outputTopic;
+
+    @Autowired
+    ZoneCapacity capacity;
 
     private final Properties inputStreamProperties;
 
@@ -47,9 +54,13 @@ public class StreamDataFlowPipe {
         KStream<String, BarrierEvent> barrierEventKStream = builder.stream(rawSourceTopic, Consumed.with(Serdes.String(), barrierEventSerde));
 
         // Create a window state store
-        builder.addStateStore(StreamFactory.createInMemoryStore(carkParkZoneStore));
+        builder.addStateStore(StreamFactory.createInMemoryStore(carkParkZoneStoreName));
 
-        barrierEventKStream.to(outputTopic, Produced.with(Serdes.String(), barrierEventSerde));
+        KStream<String, Map<String, String>> carkParkStatus = barrierEventKStream.transformValues(() -> new BarrierEventTransformer(carkParkZoneStoreName, capacity), carkParkZoneStoreName)
+                .map((key, CarParkStatus) -> CarParkStatus)
+                .peek((k, v)-> log.info("key: {} value: {}" , k, v));
+
+        carkParkStatus.to(outputTopic);
 
         return builder.build();
     }

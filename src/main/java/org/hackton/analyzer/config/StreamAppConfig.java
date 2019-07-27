@@ -33,9 +33,6 @@ public class StreamAppConfig {
         inputStreamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, "sky.hackton.kstream.car.park.space.analyzer");
         inputStreamsConfiguration.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, stringSerdeName);
         inputStreamsConfiguration.put(StreamsConfig.producerPrefix(ProducerConfig.MAX_REQUEST_SIZE_CONFIG), 10_000_000);
-        //Exactly Once Semantics
-        //inputStreamsConfiguration.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
-        //Resilience to Broker Outages
         inputStreamsConfiguration.put(StreamsConfig.producerPrefix(ProducerConfig.RETRIES_CONFIG), Integer.MAX_VALUE);
         inputStreamsConfiguration.put(StreamsConfig.producerPrefix(ProducerConfig.MAX_BLOCK_MS_CONFIG), Integer.MAX_VALUE);
         inputStreamsConfiguration.put(StreamsConfig.producerPrefix(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG), new Long(Duration.ofMinutes(5).toMillis()).intValue());
