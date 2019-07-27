@@ -23,9 +23,9 @@ public class BarrierEventTransformer implements ValueTransformer<BarrierEvent, K
     private KeyValueStore<String, Integer> carParkStore;
     private final String carParkStoreName;
     private ProcessorContext context;
-    final ZoneCapacity carkZoneCapacity;
+    final Map<String, String> carkZoneCapacity;
 
-    public BarrierEventTransformer(String carParkStoreName, ZoneCapacity capacity) {
+    public BarrierEventTransformer(String carParkStoreName, Map<String, String> capacity) {
         Objects.requireNonNull(carParkStoreName,"Store Name can't be null");
         this.carParkStoreName = carParkStoreName;
         this.carkZoneCapacity = capacity;
@@ -66,7 +66,7 @@ public class BarrierEventTransformer implements ValueTransformer<BarrierEvent, K
             KeyValue<String, Integer> keyValue = iterator.next();
             List<String> keyFragments = Arrays.asList(keyValue.key.split("~"));
             if(keyFragments.size() == 3){
-                int capacity = Integer.valueOf(carkZoneCapacity.getCapacity().get(event.getBarrierType()));
+                int capacity = Integer.valueOf(carkZoneCapacity.get(event.getBarrierType()));
                 int availability = capacity - keyValue.value;
 
                 statusMap.putIfAbsent(String.format("%s~%s", keyFragments.get(0), keyFragments.get(1)), availability == 0? "FULL": String.valueOf(availability));

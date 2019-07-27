@@ -6,6 +6,7 @@ import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.test.ConsumerRecordFactory;
 import org.hackton.analyzer.config.CarkParkStreamConfig;
+import org.hackton.analyzer.config.ZoneCapacity;
 import org.hackton.analyzer.stream.TestDriverExtention.TopologyTestDriverExtention;
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.context.ConfigFileApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -25,7 +27,7 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(
-        classes = {CarkParkStreamConfig.class},
+        classes = {CarkParkStreamConfig.class, ZoneCapacity.class},
         initializers = ConfigFileApplicationContextInitializer.class)
 public class RmsStreamDataFlowTest{
 
@@ -48,9 +50,12 @@ public class RmsStreamDataFlowTest{
     @Autowired
     private Properties inputStreamProperties;
 
+    @Autowired
+    private Map<String, String> capacity;
+
     @Before
     public void setup() {
-        StreamDataFlowPipe kafkaStream = new StreamDataFlowPipe(inputStreamProperties);
+        StreamDataFlowPipe kafkaStream = new StreamDataFlowPipe(inputStreamProperties, capacity);
         setField(kafkaStream, "rawSourceTopic", rawSourceTopic);
         setField(kafkaStream, "carkParkZoneStoreName", carkParkZoneStoreName);
         setField(kafkaStream, "outputTopic", outputTopic);

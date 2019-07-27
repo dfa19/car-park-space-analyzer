@@ -38,13 +38,13 @@ public class StreamDataFlowPipe {
     @Value("${car.park.availability.output.topic}")
     private String outputTopic;
 
-    @Autowired
-    ZoneCapacity capacity;
+    final Map<String, String> capacity;
 
     private final Properties inputStreamProperties;
 
-    public StreamDataFlowPipe(Properties inputStreamProperties){
+    public StreamDataFlowPipe(Properties inputStreamProperties, Map<String, String> capacity){
         this.inputStreamProperties = inputStreamProperties;
+        this.capacity = capacity;
     }
 
     Topology topology() {
