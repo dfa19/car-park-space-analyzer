@@ -5,7 +5,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.test.ConsumerRecordFactory;
-import org.hackton.analyzer.config.StreamAppConfig;
+import org.hackton.analyzer.config.CarkParkStreamConfig;
 import org.hackton.analyzer.stream.TestDriverExtention.TopologyTestDriverExtention;
 import org.junit.After;
 import org.junit.Before;
@@ -25,7 +25,7 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(
-        classes = {StreamAppConfig.class},
+        classes = {CarkParkStreamConfig.class},
         initializers = ConfigFileApplicationContextInitializer.class)
 public class RmsStreamDataFlowTest{
 
@@ -40,9 +40,9 @@ public class RmsStreamDataFlowTest{
     private String rawSourceTopic;
 
     @Value("${car.park.store}")
-    private String carkParkZoneStore;
+    private String carkParkZoneStoreName;
 
-    @Value("{car.park.availability.output.topic}")
+    @Value("${car.park.availability.output.topic}")
     private String outputTopic;
 
     @Autowired
@@ -52,11 +52,11 @@ public class RmsStreamDataFlowTest{
     public void setup() {
         StreamDataFlowPipe kafkaStream = new StreamDataFlowPipe(inputStreamProperties);
         setField(kafkaStream, "rawSourceTopic", rawSourceTopic);
-        setField(kafkaStream, "carkParkZoneStore", carkParkZoneStore);
+        setField(kafkaStream, "carkParkZoneStoreName", carkParkZoneStoreName);
         setField(kafkaStream, "outputTopic", outputTopic);
 
         testDriver = new TopologyTestDriverExtention(kafkaStream.topology(), inputStreamProperties);
-        store = testDriver.getKeyValueStore(carkParkZoneStore);
+        store = testDriver.getKeyValueStore(carkParkZoneStoreName);
     }
 
     @After

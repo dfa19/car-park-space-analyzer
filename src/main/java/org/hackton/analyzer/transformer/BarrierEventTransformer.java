@@ -42,10 +42,10 @@ public class BarrierEventTransformer implements ValueTransformer<BarrierEvent, K
     public KeyValue<String, Map<String, String>> transform(BarrierEvent event) {
         String storeId = String.format("%s~%s~%s", event.getCarParkId(), event.getBarrierId(), event.getBarrierType());
         //Initialize the store for this barrier
-        carParkStore.putIfAbsent(storeId, 1);
+        carParkStore.putIfAbsent(storeId, 0);
 
         //Get the current count
-        //Handle events from both RESERVED and SHIFT barriers same way
+        //Handle events from both RESERVED, SHIFT, MAIN (exit and entrance) barriers same way
         int usedCount = carParkStore.get(storeId);
         if(event.getBarrierType().equals(BarrierType.SHIFT.name()) ||
                 event.getBarrierType().equals(BarrierType.RESERVED.name()) ||

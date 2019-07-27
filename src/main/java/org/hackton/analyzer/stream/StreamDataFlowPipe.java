@@ -35,7 +35,7 @@ public class StreamDataFlowPipe {
     @Value("${car.park.store}")
     private String carkParkZoneStoreName;
 
-    @Value("{car.park.availability.output.topic}")
+    @Value("${car.park.availability.output.topic}")
     private String outputTopic;
 
     @Autowired

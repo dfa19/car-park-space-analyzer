@@ -39,12 +39,15 @@ buildscript {
     }
     dependencies {
         classpath 'com.sky.cirrus.core.gradle:k8-plugin:22.+'
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     }
 }
 
 apply plugin: 'k8plugin'
 apply plugin: 'maven-publish'
 apply plugin: 'java'
+apply plugin: "org.springframework.boot"
+apply plugin: "io.spring.dependency-management"
 
 k8plugin {
     team = 'kaas'
@@ -74,7 +77,5 @@ dependencies {
 
 group 'hackton'
 version  '1.0.0'
-
-apply plugin: 'java'
 
 sourceCompatibility = 1.8
