@@ -1,13 +1,13 @@
 car.park:
   barrier.event.topic: car-park-barrier-events
-  availability.output.topic: car-park-barrier-events
+  availability.output.topic: car-park-status
   store: hackton.car.park.space.store
   zone:
     capacity:
       SHIFT: 30
       RESERVED: 10
       GENERAL: 20
-      TOTAL: 60
+      MAIN: 60
 kafka:
   stream:
     config:
@@ -16,3 +16,5 @@ kafka:
         application.id: sky.hackton.kstream.car.park.space.analyzer
         auto.offset.reset: earliest
         producer.compression.type: gzip
+jackson:
+  serialization.write_dates_as_timestamps: true

@@ -7,6 +7,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Produced;
 import org.hackton.analyzer.config.ZoneCapacity;
 import org.hackton.analyzer.domain.BarrierEvent;
 import org.hackton.analyzer.factory.StreamFactory;
@@ -21,6 +22,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hackton.analyzer.serde.StreamSerdes.barrierEventSerde;
+import static org.hackton.analyzer.serde.StreamSerdes.carParkStatusSerde;
+import static org.hackton.analyzer.serde.StreamSerdes.stringSerde;
 
 
 @Slf4j
@@ -56,11 +59,11 @@ public class StreamDataFlowPipe {
         // Create a window state store
         builder.addStateStore(StreamFactory.createInMemoryStore(carkParkZoneStoreName));
 
-        KStream<String, Map<String, String>> carkParkStatus = barrierEventKStream.transformValues(() -> new BarrierEventTransformer(carkParkZoneStoreName, capacity), carkParkZoneStoreName)
+        KStream<String, Map> carkParkStatus = barrierEventKStream.transformValues(() -> new BarrierEventTransformer(carkParkZoneStoreName, capacity), carkParkZoneStoreName)
                 .map((key, CarParkStatus) -> CarParkStatus)
                 .peek((k, v)-> log.info("key: {} value: {}" , k, v));
 
-        carkParkStatus.to(outputTopic);
+        carkParkStatus.to(outputTopic, Produced.with(stringSerde, carParkStatusSerde));
 
         return builder.build();
     }

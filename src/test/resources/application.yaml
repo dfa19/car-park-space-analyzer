@@ -1,13 +1,13 @@
 car.park:
   barrier.event.topic: car-park-barrier-events.test
-  availability.output.topic: car-park-barrier-events.test
+  availability.output.topic: car-park-status.test
   store: hackton.car.park.space.store.test
   zone:
     capacity:
       SHIFT: 30
       RESERVED: 10
       GENERAL: 20
-      TOTAL: 60
+      MAIN: 60
 kafka:
   stream:
     config:

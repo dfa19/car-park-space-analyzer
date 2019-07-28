@@ -22,7 +22,7 @@ public class ZoneCapacity {
     @Value("${car.park.zone.capacity.GENERAL}")
     private String generalCapacity;
 
-    @Value("${car.park.zone.capacity.TOTAL}")
+    @Value("${car.park.zone.capacity.MAIN}")
     private String totalCapacity;
 
     @Bean
@@ -30,7 +30,7 @@ public class ZoneCapacity {
         capacity.put(BarrierType.SHIFT.name(), shiftCapacity);
         capacity.put(BarrierType.RESERVED.name(), reservedCapacity);
         capacity.put(BarrierType.GENERAL.name(), generalCapacity);
-        capacity.put("TOTAL", totalCapacity);
+        capacity.put(BarrierType.MAIN.name(), totalCapacity);
         return capacity;
     }
 }

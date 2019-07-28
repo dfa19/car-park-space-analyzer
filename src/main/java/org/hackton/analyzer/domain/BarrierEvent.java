@@ -2,11 +2,10 @@ package org.hackton.analyzer.domain;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 public class BarrierEvent {
 
+    private String eventId;
     private String barrierId;
 
     /**
@@ -22,5 +21,5 @@ public class BarrierEvent {
      */
     private boolean entry;
     private String carParkId;
-    private LocalDateTime timestamp;
+    private String timestamp;
 }

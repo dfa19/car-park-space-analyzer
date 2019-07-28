@@ -1,0 +1,8 @@
+{
+  "eventId": "{eventId}",
+  "barrierId": "{barrierId}",
+  "barrierType": "{barrierType}",
+  "entry": {entry},
+  "carParkId": "{carParkId}",
+  "timestamp": "{timestamp}"
+}

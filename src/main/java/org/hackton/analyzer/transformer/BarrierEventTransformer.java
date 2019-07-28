@@ -18,7 +18,7 @@ import java.util.Objects;
 
 
 @Slf4j
-public class BarrierEventTransformer implements ValueTransformer<BarrierEvent, KeyValue<String, Map<String, String>>> {
+public class BarrierEventTransformer implements ValueTransformer<BarrierEvent, KeyValue<String, Map>> {
 
     private KeyValueStore<String, Integer> carParkStore;
     private final String carParkStoreName;
@@ -39,7 +39,7 @@ public class BarrierEventTransformer implements ValueTransformer<BarrierEvent, K
     }
 
     @Override
-    public KeyValue<String, Map<String, String>> transform(BarrierEvent event) {
+    public KeyValue<String, Map> transform(BarrierEvent event) {
         String storeId = String.format("%s~%s~%s", event.getCarParkId(), event.getBarrierId(), event.getBarrierType());
         //Initialize the store for this barrier
         carParkStore.putIfAbsent(storeId, 0);
@@ -52,26 +52,58 @@ public class BarrierEventTransformer implements ValueTransformer<BarrierEvent, K
                 event.getBarrierType().equals(BarrierType.MAIN.name())){
             if(event.isEntry()){
                 //increment the usedCount
-                carParkStore.put(storeId, usedCount++);
+                carParkStore.put(storeId, ++usedCount);
             }else{
                 //Must be an exit barrier
-                carParkStore.put(storeId, usedCount--);
+                carParkStore.put(storeId, --usedCount);
             }
+        }
+
+
+        Map statusMap = new HashMap<String, String>();
+        int capacity, otherCapacity, overallCapacity, availability, otherAvailability, overallAvailability = 0, availabilitySum = 0;
+        capacity = Integer.valueOf(carkZoneCapacity.get(event.getBarrierType()));
+        availability = capacity - usedCount;
+        statusMap.put(String.format("%s~%s", event.getCarParkId(), event.getBarrierType()), availability == 0? "FULL": String.valueOf(availability));
+        if (!event.getBarrierType().equals(BarrierType.MAIN.name())) {
+            availabilitySum = availabilitySum + availability;
+        }else{
+            overallAvailability = availability;
         }
 
         //Collate all the latest counts for this car park into a map
         KeyValueIterator<String, Integer> iterator = carParkStore.all();
-        Map<String, String> statusMap = new HashMap<>();
         while(iterator.hasNext()){
             KeyValue<String, Integer> keyValue = iterator.next();
             List<String> keyFragments = Arrays.asList(keyValue.key.split("~"));
+            String carParkId = keyFragments.get(0);
+            String barrierType = keyFragments.get(2);
             if(keyFragments.size() == 3){
-                int capacity = Integer.valueOf(carkZoneCapacity.get(event.getBarrierType()));
-                int availability = capacity - keyValue.value;
+                if(!event.getCarParkId().equals(carParkId)){
+                    continue;
+                }
 
-                statusMap.putIfAbsent(String.format("%s~%s", keyFragments.get(0), keyFragments.get(1)), availability == 0? "FULL": String.valueOf(availability));
+                if(!event.getBarrierType().equals(barrierType)
+                        && !barrierType.equals(BarrierType.GENERAL.name())
+                        && !barrierType.equals(BarrierType.MAIN.name())){
+                    otherCapacity = Integer.valueOf(carkZoneCapacity.get(barrierType));
+                    otherAvailability = otherCapacity - keyValue.value;
+                    availabilitySum = availabilitySum + otherAvailability;
+                    statusMap.put(String.format("%s~%s", carParkId, barrierType), otherAvailability == 0? "FULL": String.valueOf(otherAvailability));
+                }
+
+                if (barrierType.equals(BarrierType.MAIN.name())) {
+                    overallCapacity = Integer.valueOf(carkZoneCapacity.get(barrierType));
+                    overallAvailability = overallCapacity - keyValue.value;
+                    statusMap.put(String.format("%s~%s", carParkId, barrierType), overallAvailability == 0? "FULL": String.valueOf(overallAvailability));
+                }
             }
         }
+
+        //Workout the GENERAL car park availability
+        //General = car-park-total – (reserved + shift)
+        int generalAvailability = overallAvailability - availabilitySum;
+        statusMap.put(String.format("%s~%s", event.getCarParkId(), BarrierType.GENERAL.name()), overallAvailability == 0? "FULL": String.valueOf(overallAvailability));
 
         return KeyValue.pair(event.getCarParkId(), statusMap);
     }

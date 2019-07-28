@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 public class StreamFactory {
 
 
-    public static StoreBuilder<KeyValueStore<String, String>> createInMemoryStore(final String storeName){
+    public static StoreBuilder<KeyValueStore<String, Integer>> createInMemoryStore(final String storeName){
         KeyValueBytesStoreSupplier storeSupplier = Stores.inMemoryKeyValueStore(storeName);
-        return Stores.keyValueStoreBuilder(storeSupplier, StreamSerdes.stringSerde, StreamSerdes.stringSerde);
+        return Stores.keyValueStoreBuilder(storeSupplier, StreamSerdes.stringSerde, StreamSerdes.integerSerde);
     }
 }
